@@ -1,6 +1,7 @@
 import { InstallCheck } from "@/types/preferences";
 import { Fig, Internal } from "@aws/amazon-q-developer-cli-api-bindings";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../../ui/button";
 import Lockup from "../../svg/logo";
 import onboarding from "@/data/onboarding";
@@ -13,6 +14,7 @@ import { usePlatformInfo } from "@/hooks/store/usePlatformInfo";
 import { matchesPlatformRestrictions } from "@/lib/platform";
 
 export default function OnboardingModal() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const check = onboarding[step] as InstallCheck;
   const [migrationStarted] = useLocalState("desktop.migratedFromFig");
@@ -65,6 +67,7 @@ export default function OnboardingModal() {
     })
       .then(() => {
         refreshLocalState().catch((err) => console.error(err));
+        navigate("/");
       })
       .catch((err) => console.error(err));
   }

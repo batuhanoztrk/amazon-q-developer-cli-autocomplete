@@ -296,6 +296,17 @@ export default function LoginModal({ next }: { next: () => void }) {
           />
         )}
       </div>
+      {loginState !== "loading" && (
+        <div className="flex flex-col items-center gap-2 text-center">
+          <Button variant="glass" onClick={next}>
+            Continue without an account
+          </Button>
+          <p className="text-sm max-w-80">
+            Local CLI completions work without signing in. AI features require
+            an Amazon account.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -61,15 +61,13 @@ function AppLoading() {
 
 function ActiveModal() {
   const auth = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [onboardingComplete] = useLocalStateZodDefault(
     "desktop.completedOnboarding",
     z.boolean(),
     false,
   );
-  const [closed, setClosed] = useState(false);
-
-  if (closed) return null;
-
   if (onboardingComplete === false) {
     return (
       <Modal>
@@ -78,10 +76,10 @@ function ActiveModal() {
     );
   }
 
-  if (onboardingComplete && auth.authed === false) {
+  if (location.pathname === "/login" && auth.authed === false) {
     return (
       <Modal>
-        <LoginModal next={() => setClosed(true)} />
+        <LoginModal next={() => navigate("/")} />
       </Modal>
     );
   }
@@ -133,6 +131,7 @@ function Router() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Onboarding />} />
+          <Route path="login" element={<Onboarding />} />
           <Route path="help" element={<Help />} />
           <Route path="whats-new" element={<WhatsNew />} />
           <Route path="autocomplete" element={<Autocomplete />} />

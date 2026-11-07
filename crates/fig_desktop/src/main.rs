@@ -159,9 +159,9 @@ async fn main() -> ExitCode {
         platform::gtk::init().expect("Failed initializing GTK");
     }
 
-    let is_logged_in = fig_auth::is_logged_in().await;
+    let show_onboarding = !fig_settings::state::get_bool_or("desktop.completedOnboarding", false);
 
-    if !is_logged_in {
+    if show_onboarding {
         tracing::info!("Showing onboarding");
     }
 
@@ -169,7 +169,7 @@ async fn main() -> ExitCode {
     let visible = !cli.no_dashboard;
 
     let autocomplete_enabled =
-        !fig_settings::settings::get_bool_or("autocomplete.disable", false) && is_logged_in && accessibility_enabled;
+        !fig_settings::settings::get_bool_or("autocomplete.disable", false) && accessibility_enabled;
 
     let mut webview_manager = WebviewManager::new(ctx, visible);
     webview_manager
@@ -177,7 +177,7 @@ async fn main() -> ExitCode {
             DASHBOARD_ID,
             build_dashboard,
             DashboardOptions {
-                show_onboarding: !is_logged_in,
+                show_onboarding,
                 visible,
                 page,
             },

@@ -115,7 +115,7 @@ pub const DASHBOARD_MINIMUM_SIZE: LogicalSize<f64> = LogicalSize::new(700.0, 480
 
 pub const AUTOCOMPLETE_WINDOW_TITLE: &str = "Fig Autocomplete";
 
-pub const LOGIN_PATH: &str = "/";
+pub const LOGIN_PATH: &str = "/login";
 
 fn map_theme(theme: &str) -> Option<WryTheme> {
     match theme {

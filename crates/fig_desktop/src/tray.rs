@@ -552,8 +552,9 @@ fn menu(is_logged_in: bool) -> Vec<MenuElement> {
         ]
     } else if !is_logged_in {
         vec![
-            MenuElement::info(Some(yellow_circle_img), "Your session has expired"),
-            MenuElement::entry(None, None, "Log back in", LOGIN_MENU_ID),
+            settings,
+            MenuElement::info(None, "Local completions — no account required"),
+            MenuElement::entry(None, None, "Sign in for AI features", LOGIN_MENU_ID),
         ]
     } else {
         vec![settings]

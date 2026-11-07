@@ -75,6 +75,11 @@ where
         },
         OnboardingAction::FinishOnboarding => {
             post_login().await;
+            proxy
+                .send_event(Event::ReloadTray {
+                    is_logged_in: fig_auth::is_logged_in().await,
+                })
+                .ok();
             RequestResult::success()
         },
         OnboardingAction::LaunchShellOnboarding => {
