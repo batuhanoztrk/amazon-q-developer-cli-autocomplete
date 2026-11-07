@@ -35,3 +35,13 @@ q settings autocomplete.disable false
 
 Cloud AI features still require signing in. Never falsify authentication
 state or supply fabricated tokens.
+
+## Verification on the installation Mac
+
+- Rust release build and TypeScript/Vite dashboard build passed.
+- Changed TypeScript files passed ESLint and Prettier; patch whitespace check passed.
+- Packaged and installed app passed deep code-signature verification.
+- Continue without an account persisted onboarding state and survived restart.
+- Explicit AI sign-in remained available; no Amazon account was authenticated.
+- Native Accessibility diagnostic returned true after consent.
+- User confirmed the Fig-style dropdown in a fresh iTerm tab after typing `git `.
