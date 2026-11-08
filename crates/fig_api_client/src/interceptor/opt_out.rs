@@ -39,7 +39,8 @@ impl Intercept for OptOutInterceptor {
         _runtime_components: &RuntimeComponents,
         _cfg: &mut ConfigBag,
     ) -> Result<(), BoxError> {
-        let opt_out = self.override_value.unwrap_or_else(is_codewhisperer_content_optout);
+        let opt_out = !fig_settings::local_build::SHARE_CONTENT_WITH_AWS
+            || self.override_value.unwrap_or_else(is_codewhisperer_content_optout);
         context
             .request_mut()
             .headers_mut()
@@ -57,7 +58,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_opt_out_interceptor() {
+    fn local_build_always_opts_out() {
         let rc = RuntimeComponentsBuilder::for_tests().build().unwrap();
         let mut cfg = ConfigBag::base();
 
@@ -72,12 +73,17 @@ mod tests {
             .modify_before_signing(&mut context, &rc, &mut cfg)
             .expect("success");
 
+        assert_eq!(
+            context.request().headers().get(X_AMZN_CODEWHISPERER_OPT_OUT_HEADER),
+            Some("true")
+        );
+
         interceptor.override_value = Some(false);
         interceptor
             .modify_before_signing(&mut context, &rc, &mut cfg)
             .expect("success");
         let val = context.request().headers().get(X_AMZN_CODEWHISPERER_OPT_OUT_HEADER);
-        assert_eq!(val, Some("false"));
+        assert_eq!(val, Some("true"));
 
         interceptor.override_value = Some(true);
         interceptor

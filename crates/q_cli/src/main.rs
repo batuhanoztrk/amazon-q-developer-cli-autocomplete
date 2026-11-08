@@ -46,7 +46,7 @@ fn main() -> Result<ExitCode> {
                     )
                 });
 
-            if unknown_arg {
+            if unknown_arg && fig_settings::local_build::UPDATES_ENABLED {
                 eprintln!(
                     "\nThis command may be valid in newer versions of the {PRODUCT_NAME} CLI. Try running {} {}.",
                     CLI_BINARY_NAME.magenta(),

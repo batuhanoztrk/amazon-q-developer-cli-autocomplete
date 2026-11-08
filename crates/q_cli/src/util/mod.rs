@@ -130,6 +130,7 @@ pub fn app_path_from_bundle_id(bundle_id: impl AsRef<OsStr>) -> Option<String> {
 pub fn qchat_path() -> Result<PathBuf> {
     use fig_os_shim::Context;
 
+    fig_settings::local_build::apply(&fig_settings::Settings::new())?;
     let ctx = Context::new();
     if let Some(path) = ctx.process_info().current_pid().exe() {
         // This is required for deb installations.
@@ -152,6 +153,7 @@ pub fn qchat_path() -> Result<PathBuf> {
 pub fn qchat_path() -> Result<PathBuf> {
     use macos_utils::bundle::get_bundle_path_for_executable;
 
+    fig_settings::local_build::apply(&fig_settings::Settings::new())?;
     Ok(get_bundle_path_for_executable(CHAT_BINARY_NAME).unwrap_or(home_local_bin()?.join(CHAT_BINARY_NAME)))
 }
 pub async fn quit_fig(verbose: bool) -> Result<ExitCode> {

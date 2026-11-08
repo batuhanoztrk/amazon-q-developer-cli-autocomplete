@@ -24,6 +24,10 @@ impl TelemetrySubcommand {
     pub async fn execute(&self) -> Result<ExitCode> {
         match self {
             TelemetrySubcommand::Enable => {
+                if !fig_settings::local_build::TELEMETRY_ENABLED {
+                    println!("Telemetry is disabled in this local build and cannot be enabled.");
+                    return Ok(ExitCode::SUCCESS);
+                }
                 fig_settings::settings::set_value(TELEMETRY_ENABLED_KEY, true)?;
                 Ok(ExitCode::SUCCESS)
             },
@@ -32,7 +36,8 @@ impl TelemetrySubcommand {
                 Ok(ExitCode::SUCCESS)
             },
             TelemetrySubcommand::Status { format } => {
-                let status = fig_settings::settings::get_bool_or(TELEMETRY_ENABLED_KEY, true);
+                let status = fig_settings::local_build::TELEMETRY_ENABLED
+                    && fig_settings::settings::get_bool_or(TELEMETRY_ENABLED_KEY, true);
                 format.print(
                     || {
                         format!(

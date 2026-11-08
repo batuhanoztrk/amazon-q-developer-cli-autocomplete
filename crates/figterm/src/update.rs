@@ -44,6 +44,9 @@ fn print_update_message(context: &Context, version: &Version) {
 }
 
 pub fn check_for_update(context: &Context) {
+    if !fig_settings::local_build::UPDATES_ENABLED {
+        return;
+    }
     let not_linux = context.platform().os() != Os::Linux;
     let in_cloudshell = context.env().in_cloudshell();
     let autoupdate_disabled = !get_bool_or("app.disableAutoupdates", true);

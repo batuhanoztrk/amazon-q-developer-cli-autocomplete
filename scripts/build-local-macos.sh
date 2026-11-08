@@ -26,7 +26,7 @@ export CARGO_PROFILE_RELEASE_DEBUG=0
 export CARGO_PROFILE_RELEASE_OPT_LEVEL=1
 export CARGO_PROFILE_RELEASE_LTO=false
 export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=16
-cargo build --locked --release --package fig_desktop
+cargo build --locked --release --package fig_desktop --package q_cli --package figterm
 
 mkdir -p "$output_dir"
 local_app="$output_dir/Amazon Q.app"
@@ -36,8 +36,12 @@ if [[ -e "$local_app" ]]; then
 fi
 ditto "$base_app" "$local_app"
 cp target/release/fig_desktop "$local_app/Contents/MacOS/q_desktop"
+cp target/release/q_cli "$local_app/Contents/MacOS/q"
+cp target/release/figterm "$local_app/Contents/MacOS/qterm"
+codesign --force --sign - "$local_app/Contents/MacOS/q"
+codesign --force --sign - "$local_app/Contents/MacOS/qterm"
 ditto packages/dashboard-app/dist "$local_app/Contents/Resources/dashboard"
-/usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 11907.1' "$local_app/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c 'Set :CFBundleVersion 11907.2' "$local_app/Contents/Info.plist"
 codesign --force --sign - --entitlements crates/fig_desktop/entitlements.plist "$local_app"
 codesign --verify --deep --strict "$local_app"
 echo "Built and locally signed: $local_app"

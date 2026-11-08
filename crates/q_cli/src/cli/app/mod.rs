@@ -163,7 +163,11 @@ impl AppSubcommand {
             AppSubcommand::Prompts => {
                 if fig_util::manifest::is_minimal() {
                 } else if desktop_app_running() {
-                    let new_version = state::get_string("NEW_VERSION_AVAILABLE").ok().flatten();
+                    let new_version = if fig_settings::local_build::UPDATES_ENABLED {
+                        state::get_string("NEW_VERSION_AVAILABLE").ok().flatten()
+                    } else {
+                        None
+                    };
                     if let Some(version) = new_version {
                         info!("New version {} is available", version);
                         let autoupdates = !settings::get_bool_or("app.disableAutoupdates", false);

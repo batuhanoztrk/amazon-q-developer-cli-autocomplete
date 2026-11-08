@@ -61,6 +61,10 @@ pub struct UpdateArgs {
 
 impl UpdateArgs {
     pub async fn execute(&self) -> Result<ExitCode> {
+        if !fig_settings::local_build::UPDATES_ENABLED {
+            println!("Updates are disabled in this local build. Rebuild from your fork to update.");
+            return Ok(ExitCode::SUCCESS);
+        }
         let ctx = Context::new();
         if ctx.platform().os() == Os::Linux && manifest().variant == Variant::Full {
             return try_linux_update().await;

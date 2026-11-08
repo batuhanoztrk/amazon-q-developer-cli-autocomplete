@@ -145,6 +145,9 @@ pub fn get_max_channel() -> Channel {
 }
 
 pub async fn check_for_updates(ignore_rollout: bool, is_auto_update: bool) -> Result<Option<UpdatePackage>, Error> {
+    if !fig_settings::local_build::UPDATES_ENABLED {
+        return Ok(None);
+    }
     let manifest = manifest();
     let ctx = Context::new();
     let file_type = match (&manifest.variant, ctx.platform().os()) {
@@ -160,6 +163,17 @@ pub async fn check_for_updates(ignore_rollout: bool, is_auto_update: bool) -> Re
         is_auto_update,
     )
     .await
+}
+
+#[cfg(test)]
+mod local_build_tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn local_build_skips_manual_and_automatic_update_checks() {
+        assert!(check_for_updates(true, false).await.unwrap().is_none());
+        assert!(check_for_updates(false, true).await.unwrap().is_none());
+    }
 }
 
 #[derive(Debug, Clone)]

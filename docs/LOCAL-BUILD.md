@@ -1,9 +1,9 @@
 # Local account-free autocomplete build
 
 Based on upstream tag `v1.19.7` (`b654a1beb880951dd2343120bb867659622eecd9`).
-The desktop Rust executable and dashboard are compiled from this source.
-The original verified Amazon Q 1.19.7 bundle supplies the unchanged CLI,
-qterm, chat helper, input method, completion frontend and themes.
+The desktop, CLI, qterm and dashboard are compiled from this source.
+The original verified Amazon Q 1.19.7 bundle supplies the unchanged chat
+helper, input method, completion frontend and themes.
 
 Local command completions no longer require Amazon authentication. Onboarding
 offers **Continue without an account**; explicit sign-in remains available for
@@ -25,11 +25,21 @@ The output is locally ad-hoc signed, not signed or notarized by Amazon.
 After copying it to `/Applications/Amazon Q.app`, macOS may require renewed
 Accessibility permission. Restart terminal sessions after installation.
 
-Keep the original app for rollback. Automatic updates must remain disabled
-to preserve these changes (the user explicitly approved this setting):
+Keep the original app for rollback. Vendor updates, telemetry and AWS content
+sharing are disabled by the fixed policy in `fig_settings::local_build`.
+The update and sharing controls and Kiro promotions are removed from the UI.
+`q update` and `q telemetry enable` report that those features are disabled.
+Old stored opt-in values cannot re-enable the rebuilt components.
+
+Startup also normalizes the privacy settings used by the unchanged vendor
+chat helper, and the CLI reapplies them before launching that helper. The
+vendor binary itself is outside this fork's immutable source policy.
+Completion-spec downloads and explicitly requested authenticated AI calls
+remain available; this is not an offline build.
+
+Autocomplete stays enabled:
 
 ```sh
-q settings app.disableAutoupdates true
 q settings autocomplete.disable false
 ```
 
@@ -45,3 +55,8 @@ state or supply fabricated tokens.
 - Explicit AI sign-in remained available; no Amazon account was authenticated.
 - Native Accessibility diagnostic returned true after consent.
 - User confirmed the Fig-style dropdown in a fresh iTerm tab after typing `git `.
+
+The privacy revision also adds focused checks for stale opt-in settings,
+manual/automatic update checks, telemetry client creation and forced AWS
+content opt-out. Rebuilt qterm shell copies are refreshed by content, even
+when the upstream version number is unchanged.

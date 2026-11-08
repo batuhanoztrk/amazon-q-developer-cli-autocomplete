@@ -113,6 +113,9 @@ struct DispatchingTelemetryEmitter;
 #[async_trait::async_trait]
 impl TelemetryEmitter for DispatchingTelemetryEmitter {
     async fn send(&self, event: fig_telemetry_core::Event) {
+        if telemetry_is_disabled() {
+            return;
+        }
         let event = AppTelemetryEvent::from_event(event).await;
         dispatch_or_send_event(event).await;
     }
@@ -205,6 +208,14 @@ pub struct Client {
 impl Client {
     pub async fn new(telemetry_stage: TelemetryStage) -> Self {
         let client_id = util::get_client_id();
+        if telemetry_is_disabled() {
+            return Self {
+                client_id,
+                toolkit_telemetry_client: None,
+                codewhisperer_client: None,
+                state: State::new(),
+            };
+        }
         let toolkit_telemetry_client = Some(amzn_toolkit_telemetry_client::Client::from_conf(
             Config::builder()
                 .http_client(fig_aws_common::http_client::client())
@@ -241,6 +252,9 @@ impl Client {
     }
 
     async fn send_event(&self, event: AppTelemetryEvent) {
+        if telemetry_is_disabled() {
+            return;
+        }
         self.send_migrate().await;
         self.send_cw_telemetry_event(&event).await;
         self.send_telemetry_toolkit_metric(event).await;
@@ -595,10 +609,16 @@ impl Client {
 }
 
 pub async fn send_event(event: AppTelemetryEvent) {
+    if telemetry_is_disabled() {
+        return;
+    }
     client().await.send_event(event).await;
 }
 
 pub async fn dispatch_or_send_event(event: AppTelemetryEvent) {
+    if telemetry_is_disabled() {
+        return;
+    }
     debug!(?event, "Dispatching telemetry event");
     if dispatch(&event).await.should_fallback() {
         debug!(?event, "Dispatch failed, falling back to send_event");
@@ -747,6 +767,13 @@ mod test {
     use uuid::uuid;
 
     use super::*;
+
+    #[tokio::test]
+    async fn local_build_does_not_create_telemetry_clients() {
+        let client = Client::new(TelemetryStage::EXTERNAL_PROD).await;
+        assert!(client.toolkit_telemetry_client.is_none());
+        assert!(client.codewhisperer_client.is_none());
+    }
 
     #[tokio::test]
     async fn client_context() {

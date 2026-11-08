@@ -15,6 +15,9 @@ const CLIENT_ID_STATE_KEY: &str = "telemetryClientId";
 const CLIENT_ID_ENV_VAR: &str = "Q_TELEMETRY_CLIENT_ID";
 
 pub(crate) fn telemetry_is_disabled() -> bool {
+    if !fig_settings::local_build::TELEMETRY_ENABLED {
+        return true;
+    }
     let is_test = cfg!(test);
     telemetry_is_disabled_inner(is_test, &Env::new(), &Settings::new())
 }

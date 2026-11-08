@@ -1,5 +1,8 @@
 #[cfg(not(target_os = "linux"))]
 pub async fn check_for_update(show_webview: bool, relaunch_dashboard: bool) -> bool {
+    if !fig_settings::local_build::UPDATES_ENABLED {
+        return false;
+    }
     use fig_install::{
         UpdateOptions,
         UpdateStatus,

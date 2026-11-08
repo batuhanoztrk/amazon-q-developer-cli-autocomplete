@@ -72,6 +72,9 @@ fn run_input_method_migration() {
 /// Run items at launch
 #[allow(unused_variables)]
 pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool) {
+    if let Err(err) = fig_settings::local_build::apply(&fig_settings::Settings::new()) {
+        error!(%err, "Failed to apply local build privacy settings");
+    }
     #[cfg(target_os = "macos")]
     {
         initialize_fig_dir(&fig_os_shim::Env::new()).await.ok();
@@ -107,7 +110,7 @@ pub async fn run_install(ctx: Arc<Context>, ignore_immediate_update: bool) {
     }
 
     #[cfg(not(target_os = "linux"))]
-    {
+    if fig_settings::local_build::UPDATES_ENABLED {
         // Update if there's a newer version
         if !ignore_immediate_update && !is_cargo_debug_build() {
             use std::time::Duration;
@@ -291,7 +294,15 @@ pub async fn initialize_fig_dir(env: &fig_os_shim::Env) -> anyhow::Result<()> {
                             });
 
                         if version == Some(env!("CARGO_PKG_VERSION")) {
-                            return;
+                            // Local rebuilds retain the upstream version; refresh changed helpers too.
+                            if let Ok((cached, packaged)) = tokio::try_join!(
+                                tokio::fs::read(&pty_shell_cpy),
+                                tokio::fs::read(&pty_path)
+                            ) {
+                                if cached == packaged {
+                                    return;
+                                }
+                            }
                         }
                     }
 

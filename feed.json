@@ -12,13 +12,13 @@
     },
     {
       "type": "release",
-      "date": "2025-11-17",
-      "version": "1.19.7",
-      "title": "Version 1.19.7",
+      "date": "2026-11-08",
+      "version": "1.19.7-local.2",
+      "title": "Local autocomplete build",
       "changes": [
         {
-          "type": "added",
-          "description": "Kiro CLI announcement. Learn more at kiro.dev/cli-upgrade"
+          "type": "changed",
+          "description": "Vendor updates, usage metrics and AWS content sharing are disabled in this local build."
         }
       ]
     },

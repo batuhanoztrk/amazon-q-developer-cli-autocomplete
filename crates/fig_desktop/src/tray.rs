@@ -530,7 +530,6 @@ fn menu(is_logged_in: bool) -> Vec<MenuElement> {
     let not_working = MenuElement::entry(None, None, format!("{PRODUCT_NAME} not working?"), "not-working");
     let manual = MenuElement::entry(None, None, "User Guide", "user-manual");
     let version = MenuElement::info(None, format!("Version: {}", env!("CARGO_PKG_VERSION")));
-    let update = MenuElement::entry(None, None, "Check for updates...", "update");
     let quit = MenuElement::entry(None, None, format!("Quit {PRODUCT_NAME}"), "quit");
     // let dashboard = MenuElement::entry(None, None, "Dashboard", "dashboard");
     let settings = MenuElement::entry(None, None, "Settings", "settings");
@@ -566,7 +565,6 @@ fn menu(is_logged_in: bool) -> Vec<MenuElement> {
         not_working,
         MenuElement::Separator,
         version,
-        update,
         MenuElement::Separator,
         quit,
     ]);
